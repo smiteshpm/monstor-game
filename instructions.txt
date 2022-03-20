@@ -1,0 +1,15 @@
+Task:
+Create a game where monsters will be hidden behind doors. Clicking on one will reveal the monster. If you find the sock before you’ve found all of the monsters, you lose.
+
+Notes:
+1. Display the door image by default, and reveal the monster behind it after it’s clicked. 
+
+2. If the user finds the sock before they’ve found all of the monsters, display a message letting them know they lost. If they find all of the monsters, display a message letting them know they’ve won. Either way, show a button that they can click to play again.
+
+3. Each monster (or sock) has a matching SVG file in the source code. For example, there’s a monster3 in the array, and a monster3.svg in the source code.
+
+Extras:
+1. We've included some basic CSS so that you can focus on the JavaScript. It provides a simple three-column, auto-wrapping grid system, and makes img elements responsive.
+2. You can modify the HTML, CSS or the monsters array however you want!
+
+Best of luck!

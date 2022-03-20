@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Monsters!</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<style type="text/css">
+			body {
+				margin: 0 auto;
+				max-width: 40em;
+				width: 88%;
+			}
+
+			/**
+			 * A simple grid layout
+			 */
+			.row {
+				display: grid;
+				grid-template-columns: auto auto auto;
+				text-align: center;
+			}
+
+			.grid {
+				min-height: 6em;
+				padding: 1em;
+			}
+
+			/**
+			 * Make sure images scale
+			 */
+			img {
+				height: auto;
+				max-width: 100%;
+				border: 1px solid;
+				margin: 5px;
+				padding: 5px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<h1>Monsters!</h1>
+
+		<div id="app"></div>
+
+		<footer>
+			
+		</footer>
+
+		<script>
+			// The monsters and socks
+			let monsters = [
+				'monster1',
+				'monster2',
+				'monster3',
+				'monster4',
+				'monster5',
+				'monster6',
+				'monster7',
+				'monster8',
+				'monster9',
+				'monster10',
+				'monster11',
+				'sock'
+			];
+
+			// Your code goes here...
+
+			let openedDoorArr = []; // to keep track of monsters found
+			let overlay = document.createElement("div"); // overlay 
+
+			// modal to show result  and play again button
+			let playAgainPopup = document.createElement('div');
+			playAgainPopup.classList.add('play-again-popup');
+
+			// creating rules element to describe rules of the game.
+			let rules = document.createElement('p');
+			rules.classList.add('rules');
+			rules.innerHTML = 'Rules - Monsters will be hidden behind doors. Clicking on one will reveal the monster. If you find the sock before you’ve found all of the monsters, you lose.'
+
+			document.getElementById('app').before(rules);
+
+			initializeGame();
+			createModal();
+			
+			/**
+			 * this function initializes or resets the game so that game is ready to play for user 
+			*/
+			function initializeGame() {
+				let grid, row, img;
+				randomizeMonsters(monsters, monsters.length);
+				openedDoorArr = [];
+				grid = document.createElement('div');
+				grid.classList.add('grid');
+				document.getElementById("app").appendChild(grid);
+
+				for (let i = 0; i < monsters.length; i++) {
+					if (i % 3 == 0) {
+						row = document.createElement('div');
+						row.classList.add('row');
+						grid.appendChild(row);
+					}
+
+					img = document.createElement('img');
+					img.src = "./images/door.svg";
+					img.id = 'img-' + i;
+					img.addEventListener('click', (e) => {
+						openDoor(e);
+					});
+					row.appendChild(img);
+				}
+			}
+
+			/**
+			 * openDoor function is used to show whats behind the door, monstor / sock
+			 * @param {object} e - event object captured when user clicks on the door
+			*/
+			function openDoor(e) {
+				let index, imgName, playGame;
+				index = e.target.id.split('-')[1];
+				imgName = monsters[index] + '.svg';
+				e.target.classList.add('door-open');
+				openedDoorArr.push(index);
+
+				if(imgName == 'sock.svg') {
+					let message = '';
+					if(openedDoorArr.length < 12) {
+						message = 'You lose.';
+					} 
+					//Note - with this logic user needs to click on sock tile door to show winning message
+					// else {
+					// 	message = 'You win.';
+					// }
+
+					showResult(message, false);
+				} else {
+					// Note - with this logic if user opens all monster tiles winning message will be shown as soon as last monster tile is opened, no need to click open sock tile.
+					if(openedDoorArr.length == 11) {
+						message = 'You win.'
+						showResult(message, true);
+					}
+				}
+
+				e.target.src = './images/'+imgName;
+			}
+
+			/**
+			 *  create result pop modal with play again button and add events to play again button
+			*/
+			function createModal() {
+				let body = document.querySelector("body");
+				let modal = document.createElement('div');
+				let message = document.createElement('p');
+				let playAgainBtn = document.createElement('span');
+				playAgainBtn.innerHTML = 'Play again';
+				playAgainBtn.classList.add('play-again-btn');
+				message.classList.add('message');
+				message.setAttribute('id', 'result-text');
+				message.innerHTML = 'Hello world';
+				modal.classList.add('modal');
+				modal.setAttribute('id', 'game-over');
+				modal.appendChild(message);
+				modal.appendChild(playAgainBtn);
+				body.appendChild(modal);
+
+				playAgainBtn.addEventListener('click', (e) => {
+					modal.classList.remove('show');
+					let app = document.getElementById('app');
+					app.removeChild(app.firstChild);
+					body.removeChild(overlay);
+					initializeGame();
+				});
+			}
+
+			/**
+			 * this function randomize the array elements to shuffle monstors behind the door
+			 * @param {array} arr - array input that needs to be shuffled
+			 * @param {number} n - array length used for iterating through array 
+			*/
+			function randomizeMonsters(arr, n) {
+				for (let i = n - 1; i > 0; i--) {
+					// Pick a random index from 0 to i inclusive
+					let j = Math.floor(Math.random() * (i + 1));
+					// Swap arr[i] with the element
+					// at random index
+					[arr[i], arr[j]] = [arr[j], arr[i]];
+				}
+			}
+
+			/**
+			 * this function is to show result when game is over, shows popup modal
+			 * @param {string} message - message to show in popup - win / lose
+			 * @param {boolean} win - it is flag to determine win / lose so that css can be applied accordingly
+			 */ 
+			function showResult(message, win = false) {
+				let resultText = document.getElementById('result-text');
+				resultText.classList.remove('win');
+				resultText.classList.remove('lose');
+				setTimeout(() => {
+					(win) ? resultText.classList.add('win') : resultText.classList.add('lose');
+					resultText.innerHTML = message;
+					overlay.classList.add('overlay');
+					document.querySelector("body").appendChild(overlay);
+					document.getElementById('game-over').classList.add('show');
+				}, 500);
+			}
+			
+		</script>
+		<link rel="stylesheet" href="main.css">
+	</body>
+</html>
